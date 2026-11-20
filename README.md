@@ -53,7 +53,13 @@ One time in WSL: `sudo apt install clang lld llvm`, then `cargo install cargo-xw
 scripts/xwin.sh build --example scan     # then run ~/Project/periph-status/target/x86_64-pc-windows-msvc/debug/examples/scan.exe
 scripts/xwin.sh build --example dump     # dump raw Bluetooth/PnP properties for debugging
 scripts/xwin.sh build --release          # the app: .../release/periph-status.exe
+scripts/installer.sh                     # NSIS installer: .../release/bundle/nsis/Periph Status_<version>_x64-setup.exe
 ```
+
+`scripts/installer.sh` additionally needs `sudo apt install nsis` and
+`cargo install tauri-cli --version "^2" --locked` in WSL. The installer is per-user (no admin
+rights), installs to `%LOCALAPPDATA%\Periph Status`, and supports `/S` for a silent install.
+It is not code-signed, so SmartScreen may warn on first run.
 
 Note: disconnected devices still have the **last known** battery value stored by Windows (or the
 receiver). `scan` shows it in parentheses; the popup labels it "last known".

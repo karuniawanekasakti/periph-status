@@ -1,4 +1,5 @@
 pub mod alerts;
+pub mod autostart;
 pub mod model;
 mod monitor;
 pub mod provider;
@@ -124,6 +125,16 @@ pub fn run() {
             build_tray(app.handle())?;
             monitor.start(app.handle().clone());
 
+            // Release builds are the installed app: make sure an existing autostart entry points
+            // at this executable (it may still point at an old build or be unquoted).
+            if !cfg!(debug_assertions) && app.autolaunch().is_enabled().unwrap_or(false) {
+                match autostart::repair_run_value(&app.package_info().name, &[AUTOSTART_ARG]) {
+                    Ok(true) => log::info!("autostart entry updated to the current executable"),
+                    Ok(false) => {}
+                    Err(e) => log::warn!("failed to update the autostart entry: {e:#}"),
+                }
+            }
+
             // Launched manually (not via autostart) → show the popup so the user knows the app
             // is running, since new tray icons are often hidden in the Windows 11 overflow.
             if !std::env::args().any(|a| a == AUTOSTART_ARG) {
@@ -215,7 +226,13 @@ fn apply_autostart(app: &AppHandle, enabled: bool) -> Result<(), String> {
     } else {
         launcher.disable()
     };
-    res.map_err(|e| format!("failed to change autostart: {e}"))
+    res.map_err(|e| format!("failed to change autostart: {e}"))?;
+    if enabled {
+        // The plugin writes the executable path unquoted; rewrite it quoted.
+        autostart::repair_run_value(&app.package_info().name, &[AUTOSTART_ARG])
+            .map_err(|e| format!("failed to update the autostart entry: {e:#}"))?;
+    }
+    Ok(())
 }
 
 fn toggle_popup(app: &AppHandle, anchor: Option<Anchor>) {

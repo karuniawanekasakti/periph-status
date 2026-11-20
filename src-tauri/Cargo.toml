@@ -42,6 +42,8 @@ windows = { version = "0.61", features = [
 ] }
 # WinRT collection types (IIterable, IMapView) live in a separate crate since windows 0.59.
 windows-collections = "0.2"
+# Fixing up the autostart `Run` value (same crate auto-launch uses).
+windows-registry = "0.6"
 
 [profile.release]
 codegen-units = 1
