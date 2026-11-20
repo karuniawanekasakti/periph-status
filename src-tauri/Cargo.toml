@@ -2,6 +2,8 @@
 name = "periph-status"
 version = "0.1.0"
 description = "Battery monitor for wireless peripherals"
+license = "MIT"
+repository = "https://github.com/karuniawanekasakti/periph-status"
 edition = "2021"
 default-run = "periph-status"
 

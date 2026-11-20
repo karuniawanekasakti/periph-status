@@ -95,3 +95,6 @@ reports), `dongle` (query a receiver step by step).
   last value the receiver remembers.
 - In `cargo tauri dev`, notifications appear under PowerShell's name. Once installed with the
   installer, they appear under the app's name.
+
+## License
+[MIT](LICENSE)
