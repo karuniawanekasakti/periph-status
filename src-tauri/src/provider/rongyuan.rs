@@ -197,6 +197,7 @@ mod win {
                     battery: Some(level),
                     connected: online,
                     source: BatterySource::Dongle,
+                    details: None,
                 });
             }
         }

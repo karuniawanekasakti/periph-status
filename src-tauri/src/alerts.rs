@@ -82,6 +82,7 @@ mod tests {
             battery,
             connected,
             source: BatterySource::Pnp,
+            details: None,
         }
     }
 

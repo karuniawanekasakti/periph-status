@@ -2717,6 +2717,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "windows 0.61.3",
  "windows-collections 0.2.0",
+ "windows-future 0.2.1",
  "windows-registry",
 ]
 

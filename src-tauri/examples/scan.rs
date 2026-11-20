@@ -26,6 +26,16 @@ fn main() -> anyhow::Result<()> {
             battery,
             format!("{:?}", d.source).to_lowercase(),
         );
+        if let Some(t) = d.details {
+            let pct = |v: Option<u8>| v.map(|v| format!("{v}%")).unwrap_or_else(|| "—".into());
+            println!(
+                "    left {}  right {}  case {}{}",
+                pct(t.left),
+                pct(t.right),
+                pct(t.case),
+                if t.charging { "  (charging)" } else { "" }
+            );
+        }
     }
     if devices.iter().any(|d| !d.connected && d.battery.is_some()) {
         println!("\n(…%) = last known value (stored by Windows / the receiver); the device is not connected");

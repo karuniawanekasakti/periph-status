@@ -12,6 +12,19 @@ pub struct Device {
     pub battery: Option<u8>,
     pub connected: bool,
     pub source: BatterySource,
+    /// Per-component levels for true wireless earbuds, when the device reports them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub details: Option<TwsBattery>,
+}
+
+/// Battery levels of the individual parts of true wireless earbuds.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TwsBattery {
+    pub left: Option<u8>,
+    pub right: Option<u8>,
+    pub case: Option<u8>,
+    pub charging: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -36,6 +49,8 @@ pub enum BatterySource {
     Gatt,
     /// Read from a 2.4 GHz receiver/dongle through a vendor protocol.
     Dongle,
+    /// Read from the device itself through a vendor protocol (e.g. Huawei SPP).
+    Vendor,
     None,
 }
 
@@ -149,6 +164,7 @@ mod tests {
             battery: None,
             connected,
             source: BatterySource::None,
+            details: None,
         };
         let mut v = vec![d("b", false), d("C", true), d("a", true)];
         sort_devices(&mut v);

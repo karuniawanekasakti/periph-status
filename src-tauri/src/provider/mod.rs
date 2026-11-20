@@ -6,6 +6,7 @@ use crate::model::{kind_from_name, sort_devices, BatterySource, Device, DeviceKi
 
 #[cfg(target_os = "macos")]
 mod mac;
+pub mod huawei;
 pub(crate) mod rongyuan;
 #[cfg(windows)]
 mod win;
@@ -95,6 +96,7 @@ pub(crate) fn merge(entries: Vec<RawEntry>, pnp_battery: &HashMap<u128, u8>) -> 
             battery: battery.map(|b| b.min(100)),
             connected: e.connected,
             source,
+            details: None,
         });
     }
 

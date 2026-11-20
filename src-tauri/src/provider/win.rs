@@ -6,7 +6,7 @@
 //!    (`{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2`) → map of ContainerId → %.
 //! 3. Fallback for connected LE devices without that property:
 //!    read the GATT Battery Service (0x180F) / Battery Level (0x2A19).
-//! 4. 2.4 GHz receivers via vendor protocols (see `rongyuan.rs`).
+//! 4. Vendor protocols: Huawei FreeBuds over SPP (`huawei.rs`), 2.4 GHz receivers (`rongyuan.rs`).
 
 use std::collections::HashMap;
 
@@ -22,7 +22,7 @@ use windows::Storage::Streams::DataReader;
 use windows_collections::{IIterable, IMapView};
 use windows::Win32::System::WinRT::{RoInitialize, RO_INIT_MULTITHREADED};
 
-use super::{merge, rongyuan, BatteryProvider, RawEntry};
+use super::{huawei, merge, rongyuan, BatteryProvider, RawEntry};
 use crate::model::{kind_from_appearance, kind_from_cod, sort_devices, Device, DeviceKind};
 
 /// DEVPKEY battery level Bluetooth (DEVPROP_TYPE_BYTE, 0..=100).
@@ -132,6 +132,14 @@ impl BatteryProvider for WindowsProvider {
         }
 
         let mut devices = merge(entries.into_iter().map(|(e, _)| e).collect(), &pnp);
+        // Huawei FreeBuds report only a coarse level over Hands-Free; ask the earbuds directly.
+        for d in devices.iter_mut().filter(|d| d.connected && huawei::is_supported_name(&d.name)) {
+            match huawei::read_battery(&d.id) {
+                Ok(Some(b)) => huawei::apply(d, b),
+                Ok(None) => {}
+                Err(e) => log::debug!("Huawei SPP battery read for {} failed: {e:#}", d.name),
+            }
+        }
         // Mice/keyboards connected through a 2.4 GHz receiver (not Bluetooth).
         devices.extend(rongyuan::read_all());
         sort_devices(&mut devices);

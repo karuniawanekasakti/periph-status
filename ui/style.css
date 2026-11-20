@@ -96,6 +96,7 @@ html, body {
 .device .info { min-width: 0; }
 .device .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .device .status { color: var(--muted); font-size: 12px; }
+.device .detail { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .device .level { text-align: right; min-width: 64px; }
 .device .pct { font-weight: 600; font-variant-numeric: tabular-nums; }
 .device .pct.none { color: var(--muted); font-weight: 400; }

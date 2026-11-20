@@ -68,6 +68,7 @@ receiver). `scan` shows it in parentheses; the popup labels it "last known".
 | File | Contents |
 | --- | --- |
 | `src-tauri/src/provider/win.rs` | Reads devices and battery through WinRT (the `windows` crate) |
+| `src-tauri/src/provider/huawei.rs` | Huawei FreeBuds SPP protocol (left/right/case battery) |
 | `src-tauri/src/provider/rongyuan.rs` | Rongyuan 2.4 GHz receiver protocol (HID feature reports) |
 | `src-tauri/src/provider/mod.rs` | `BatteryProvider` trait + merging data per physical device |
 | `src-tauri/src/monitor.rs` | Polling thread, snapshot, UI events, tooltip, notifications |
@@ -83,7 +84,13 @@ Battery reading on Windows:
    same value Windows Settings shows. It is matched to devices through `ContainerId`.
 3. For connected BLE devices without that property, the app reads the GATT Battery Service
    (`0x180F` / `0x2A19`) directly.
-4. **Rongyuan-chip 2.4 GHz receivers (VID `3151`)**, used by many wireless mice/keyboards: the app
+4. **Huawei FreeBuds**: Windows only gets a coarse level over Hands-Free (e.g. 100% while the
+   earbuds are at 91%). For connected FreeBuds the app opens the Serial Port (RFCOMM) service and
+   sends the Huawei battery request (`5A 00 09 00 01 08 01 00 02 00 03 00 FB B9`); the reply carries
+   the global level plus left/right/case and charging flags. See `src-tauri/src/provider/huawei.rs`.
+   Wire format as documented by [OpenFreebuds](https://github.com/melianmiko/OpenFreebuds) and
+   [hrbtnog/freebuds-client](https://github.com/hrbtnog/freebuds-client) (independent implementation).
+5. **Rongyuan-chip 2.4 GHz receivers (VID `3151`)**, used by many wireless mice/keyboards: the app
    sends the status query `SET_FEATURE [00 F7 00 …]` to vendor collection `FFFF:0002`, then reads
    `GET_FEATURE` report 0 (`[2]` keyboard battery, `[3]` mouse battery, `[4]`/`[5]` offline flags).
    See `src-tauri/src/provider/rongyuan.rs`. The protocol follows
@@ -91,11 +98,12 @@ Battery reading on Windows:
    [krisgfx9/Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor).
 
 Other debug examples: `hidprobe` (list HID collections), `hidlisten` (passively listen to vendor
-reports), `dongle` (query a receiver step by step).
+reports), `dongle` (query a receiver step by step), `huawei` (Huawei SPP battery query).
 
 ## Limitations
 - Devices that don't report their battery to Windows show "—".
-- TWS earbuds usually report a single value, not separate left/right/case levels.
+- Most TWS earbuds only report a single, coarse value through Windows. Separate left/right/case
+  levels are only read for Huawei FreeBuds (tested on FreeBuds 6i).
 - 2.4 GHz receivers other than the Rongyuan chip (e.g. Logitech Unifying/Bolt) are not supported yet.
 - Rongyuan receivers report the mouse as "offline" while it sleeps; the level shown then is the
   last value the receiver remembers.

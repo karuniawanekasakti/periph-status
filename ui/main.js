@@ -64,6 +64,23 @@ function renderDevices() {
         ? "Disconnected"
         : "Disconnected · last known";
     info.append(name, status);
+    if (d.details) {
+      // Per-part levels for true wireless earbuds.
+      const parts = [
+        ["L", d.details.left],
+        ["R", d.details.right],
+        ["Case", d.details.case],
+      ]
+        .filter(([, v]) => v != null)
+        .map(([label, v]) => `${label} ${v}%`);
+      if (d.details.charging) parts.push("Charging");
+      if (parts.length) {
+        const detail = document.createElement("div");
+        detail.className = "detail";
+        detail.textContent = parts.join(" · ");
+        info.append(detail);
+      }
+    }
 
     const level = document.createElement("div");
     level.className = "level";
@@ -82,7 +99,9 @@ function renderDevices() {
           ? "Read from the GATT Battery Service"
           : d.source === "dongle"
             ? "Read from the 2.4 GHz receiver"
-            : "Reported by Windows";
+            : d.source === "vendor"
+              ? "Read from the device (vendor protocol)"
+              : "Reported by Windows";
       const bar = document.createElement("div");
       bar.className = "bar";
       const fill = document.createElement("i");
