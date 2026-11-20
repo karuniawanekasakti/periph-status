@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Periph Status</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="panel">
+    <header class="top">
+      <h1 id="title">Devices</h1>
+      <div class="actions">
+        <button id="btn-refresh" class="icon-btn" title="Refresh now" aria-label="Refresh now">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>
+        </button>
+        <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section id="view-devices" class="view">
+      <ul id="device-list" class="devices"></ul>
+      <p id="empty" class="empty" hidden></p>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section id="view-settings" class="view" hidden>
+      <label class="row">
+        <span>Low battery notifications</span>
+        <input type="checkbox" id="set-notify" class="switch" />
+      </label>
+      <label class="row column">
+        <span>Low battery threshold: <strong id="threshold-value">20%</strong></span>
+        <input type="range" id="set-threshold" min="5" max="50" step="5" />
+      </label>
+      <label class="row">
+        <span>Check every</span>
+        <select id="set-interval">
+          <option value="15">15 seconds</option>
+          <option value="30">30 seconds</option>
+          <option value="60">1 minute</option>
+          <option value="300">5 minutes</option>
+          <option value="900">15 minutes</option>
+        </select>
+      </label>
+      <label class="row">
+        <span>Show disconnected devices</span>
+        <input type="checkbox" id="set-show-disconnected" class="switch" />
+      </label>
+      <label class="row">
+        <span>Start at login</span>
+        <input type="checkbox" id="set-autostart" class="switch" />
+      </label>
+      <p id="settings-error" class="error" hidden></p>
+      <button id="btn-quit" class="quit">Quit Periph Status</button>
+    </section>
+
+    <footer class="bottom">
+      <span id="updated">Scanning…</span>
+    </footer>
+  </main>
+  <script src="main.js"></script>
+</body>
+</html>
